@@ -25,11 +25,12 @@ fn should_failed_invalid_bond_amount() {
 fn should_failed_too_many_candidates() {
 	let mut ext = TestExtBuilder::default();
 	ext.max_candidates(4).genesis_candidates(vec![]).build().execute_with(|| {
-		// Attemp to register as candidate without enough fund in the account
+		// Attempt to register as candidate without enough fund in the account
 		test_helpers::register_new_candidate(CANDIDATE_1.id, CANDIDATE_1.balance, 500);
 		test_helpers::register_new_candidate(CANDIDATE_2.id, CANDIDATE_2.balance, 500);
 		test_helpers::register_new_candidate(CANDIDATE_3.id, CANDIDATE_3.balance, 500);
 		test_helpers::register_new_candidate(CANDIDATE_4.id, CANDIDATE_4.balance, 500);
+
 		assert_noop!(
 			Dpos::register_as_candidate(ros(CANDIDATE_5.id), 500),
 			Error::<Test>::TooManyValidators

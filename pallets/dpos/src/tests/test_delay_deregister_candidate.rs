@@ -20,20 +20,20 @@ fn should_failed_no_candidate_found() {
 fn should_ok_delay_deregister_sucessfully() {
 	let mut ext = TestExtBuilder::default();
 	ext.genesis_candidates(vec![]).build().execute_with(|| {
-		let (succes_acc, bond) = ACCOUNT_2.to_tuple();
+		let (success_acc, bond) = ACCOUNT_2.to_tuple();
 		let hold_amount = 15;
 
 		ext.run_to_block(10);
 		// Register first
-		assert_ok!(Dpos::register_as_candidate(ros(succes_acc), hold_amount));
+		assert_ok!(Dpos::register_as_candidate(ros(success_acc), hold_amount));
 		// Then schedule to deregister
-		assert_ok!(Dpos::delay_deregister_candidate(ros(succes_acc)));
+		assert_ok!(Dpos::delay_deregister_candidate(ros(success_acc)));
 
 		// This does not deregister the candidate from the pool yet
 		let last_block_height = ext.run_to_block_from(10, TEST_BLOCKS_PER_EPOCH * 2);
 
 		assert_eq!(
-			CandidatePool::<Test>::get(succes_acc),
+			CandidatePool::<Test>::get(success_acc),
 			Some(CandidateDetail {
 				bond: hold_amount,
 				total_delegations: 0,
@@ -41,7 +41,7 @@ fn should_ok_delay_deregister_sucessfully() {
 			})
 		);
 		assert_eq!(
-			DelayActionRequests::<Test>::get(succes_acc, DelayActionType::CandidateLeaved),
+			DelayActionRequests::<Test>::get(success_acc, DelayActionType::CandidateLeaved),
 			Some(DelayActionRequest {
 				amount: None,
 				created_at: 10,
@@ -53,16 +53,16 @@ fn should_ok_delay_deregister_sucessfully() {
 		// We go the few other blocks and try to execute it again
 		ext.run_to_block_from(last_block_height, TEST_BLOCKS_PER_EPOCH * 2);
 
-		assert_ok!(Dpos::execute_deregister_candidate(ros(succes_acc)));
+		assert_ok!(Dpos::execute_deregister_candidate(ros(success_acc)));
 
 		System::assert_last_event(RuntimeEvent::Dpos(Event::CandidateRegistrationRemoved {
-			candidate_id: succes_acc,
+			candidate_id: success_acc,
 		}));
-		assert_eq!(CandidatePool::<Test>::get(succes_acc), None);
+		assert_eq!(CandidatePool::<Test>::get(success_acc), None);
 
-		assert_eq!(Balances::free_balance(succes_acc), bond);
+		assert_eq!(Balances::free_balance(success_acc), bond);
 		assert_eq!(
-			Balances::balance_on_hold(&HoldReason::CandidateBondReserved.into(), &succes_acc),
+			Balances::balance_on_hold(&HoldReason::CandidateBondReserved.into(), &success_acc),
 			0
 		);
 	});
@@ -363,21 +363,21 @@ fn should_ok_cancel_deregister_candidate_requests() {
 fn should_failed_cancel_not_found_delay_action_request() {
 	let mut ext = TestExtBuilder::default();
 	ext.genesis_candidates(vec![]).build().execute_with(|| {
-		let (succes_acc, balance) = ACCOUNT_2.to_tuple();
+		let (success_acc, balance) = ACCOUNT_2.to_tuple();
 		let hold_amount = 15;
 
 		ext.run_to_block(10);
 		// Register first
-		test_helpers::register_new_candidate(succes_acc, balance, hold_amount);
+		test_helpers::register_new_candidate(success_acc, balance, hold_amount);
 
 		// Then schedule to deregister
-		assert_ok!(Dpos::delay_deregister_candidate(ros(succes_acc)));
+		assert_ok!(Dpos::delay_deregister_candidate(ros(success_acc)));
 
 		// This does not deregister the candidate from the pool yet
 		ext.run_to_block(HALF_EPOCH);
 
 		assert_eq!(
-			CandidatePool::<Test>::get(succes_acc),
+			CandidatePool::<Test>::get(success_acc),
 			Some(CandidateDetail {
 				bond: hold_amount,
 				total_delegations: 0,
@@ -385,7 +385,7 @@ fn should_failed_cancel_not_found_delay_action_request() {
 			})
 		);
 		assert_eq!(
-			DelayActionRequests::<Test>::get(succes_acc, DelayActionType::CandidateLeaved),
+			DelayActionRequests::<Test>::get(success_acc, DelayActionType::CandidateLeaved),
 			Some(DelayActionRequest {
 				amount: None,
 				created_at: 10,
@@ -409,21 +409,21 @@ fn should_failed_cancel_not_found_delay_action_request() {
 fn should_failed_deregister_while_in_delay_duration() {
 	let mut ext = TestExtBuilder::default();
 	ext.genesis_candidates(vec![]).build().execute_with(|| {
-		let (succes_acc, balance) = ACCOUNT_2.to_tuple();
+		let (success_acc, balance) = ACCOUNT_2.to_tuple();
 		let hold_amount = 15;
 
 		ext.run_to_block(10);
 		// Register first
-		test_helpers::register_new_candidate(succes_acc, balance, hold_amount);
+		test_helpers::register_new_candidate(success_acc, balance, hold_amount);
 
 		// Then schedule to deregister
-		assert_ok!(Dpos::delay_deregister_candidate(ros(succes_acc)));
+		assert_ok!(Dpos::delay_deregister_candidate(ros(success_acc)));
 
 		// This does not deregister the candidate from the pool yet
 		ext.run_to_block(HALF_EPOCH);
 
 		assert_eq!(
-			CandidatePool::<Test>::get(succes_acc),
+			CandidatePool::<Test>::get(success_acc),
 			Some(CandidateDetail {
 				bond: hold_amount,
 				total_delegations: 0,
@@ -431,7 +431,7 @@ fn should_failed_deregister_while_in_delay_duration() {
 			})
 		);
 		assert_eq!(
-			DelayActionRequests::<Test>::get(succes_acc, DelayActionType::CandidateLeaved),
+			DelayActionRequests::<Test>::get(success_acc, DelayActionType::CandidateLeaved),
 			Some(DelayActionRequest {
 				amount: None,
 				created_at: 10,
@@ -444,7 +444,7 @@ fn should_failed_deregister_while_in_delay_duration() {
 		ext.run_to_block(TEST_BLOCKS_PER_EPOCH * 2);
 
 		assert_noop!(
-			Dpos::delay_deregister_candidate(ros(succes_acc)),
+			Dpos::delay_deregister_candidate(ros(success_acc)),
 			Error::<Test>::ActionIsStillInDelayDuration
 		);
 	});

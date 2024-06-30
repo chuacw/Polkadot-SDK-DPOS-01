@@ -38,8 +38,8 @@ pub mod pallet {
                 return Err("AlreadyExists".into());
             }
 
-            Balances::<T>::insert(&who, amount);
 
+            Balances::<T>::insert(&who, amount);
             let mut issuance = TotalIssuance::<T>::get();
             issuance += amount; // avoid unsafe math
             TotalIssuance::<T>::put(issuance);

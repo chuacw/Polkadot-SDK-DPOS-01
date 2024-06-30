@@ -31,23 +31,23 @@ fn should_failed_no_delegation_found() {
 fn should_ok_deregister_sucessfully() {
 	let mut ext = TestExtBuilder::default();
 	ext.genesis_candidates(vec![]).build().execute_with(|| {
-		let (succes_acc, bond) = ACCOUNT_2.to_tuple();
+		let (success_acc, bond) = ACCOUNT_2.to_tuple();
 		let hold_amount = 15;
 
 		ext.run_to_block(10);
 		// Register first
-		assert_ok!(Dpos::register_as_candidate(ros(succes_acc), hold_amount));
+		assert_ok!(Dpos::register_as_candidate(ros(success_acc), hold_amount));
 
 		// Then deregister
-		assert_ok!(Dpos::force_deregister_candidate(RuntimeOrigin::root(), succes_acc));
+		assert_ok!(Dpos::force_deregister_candidate(RuntimeOrigin::root(), success_acc));
 		System::assert_last_event(RuntimeEvent::Dpos(Event::CandidateRegistrationRemoved {
-			candidate_id: succes_acc,
+			candidate_id: success_acc,
 		}));
-		assert_eq!(CandidatePool::<Test>::get(succes_acc), None);
+		assert_eq!(CandidatePool::<Test>::get(success_acc), None);
 		assert_eq!(CandidatePool::<Test>::count(), 0);
 
-		assert_eq!(Balances::free_balance(succes_acc), bond);
-		assert_eq!(Balances::total_balance_on_hold(&succes_acc), 0);
+		assert_eq!(Balances::free_balance(success_acc), bond);
+		assert_eq!(Balances::total_balance_on_hold(&success_acc), 0);
 	});
 }
 
