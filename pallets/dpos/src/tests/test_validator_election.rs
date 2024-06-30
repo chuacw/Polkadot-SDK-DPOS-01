@@ -134,7 +134,7 @@ fn should_ok_reward_distributed_for_validators() {
 
 			for round in 0..epochs {
 				let maybe_author = find_author();
-				for (indx, (active_validator, bond, _)) in
+				for (index, (active_validator, bond, _)) in
 					Dpos::active_validators().iter().enumerate()
 				{
 					if Some(*active_validator) == maybe_author {
@@ -145,7 +145,7 @@ fn should_ok_reward_distributed_for_validators() {
 							Some(bond)
 						);
 						// Calculate the rewards of the validator in every epoch
-						epoch_rewards[indx] += Dpos::calculate_reward(
+						epoch_rewards[index] += Dpos::calculate_reward(
 							*bond,
 							<mock::Test as pallet::Config>::AuthorCommission::get(),
 						);
@@ -153,7 +153,7 @@ fn should_ok_reward_distributed_for_validators() {
 					// If the epoch ends...
 					if round % TEST_BLOCKS_PER_EPOCH == 0 {
 						// Check if the reward points are calculated correctly
-						assert_eq!(Dpos::reward_points(active_validator), epoch_rewards[indx]);
+						assert_eq!(Dpos::reward_points(active_validator), epoch_rewards[index]);
 					}
 				}
 				ext.next_block();

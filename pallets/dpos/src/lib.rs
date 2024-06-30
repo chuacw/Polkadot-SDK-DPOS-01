@@ -310,8 +310,7 @@ pub mod pallet {
 		CandidateDelegated {
 			candidate_id: T::AccountId,
 			delegated_by: T::AccountId,
-			amount: BalanceOf<T>,
-			total_delegated_amount: BalanceOf<T>,
+			amount: BalanceOf<T>, total_delegated_amount: BalanceOf<T>,
 		},
 		CandidateUndelegated {
 			candidate_id: T::AccountId,
@@ -371,8 +370,8 @@ pub mod pallet {
 
 			// This is a pretty lightweight check that we do EVERY block, but then tells us when an
 			// Epoch has passed...
-			let epoch_indx = n % T::EpochDuration::get();
-			if epoch_indx == BlockNumberFor::<T>::zero() {
+			let epoch_index = n % T::EpochDuration::get();
+			if epoch_index == BlockNumberFor::<T>::zero() {
 				let active_validator_set = Self::select_active_validator_set();
 
 				// Update a new set of active validators
@@ -779,7 +778,7 @@ pub mod pallet {
 			candidate_delegators
 				.binary_search(&delegator)
 				.map_err(|_| Error::<T>::DelegationDoesNotExist)
-				.map(|indx| candidate_delegators.remove(indx))?;
+				.map(|index| candidate_delegators.remove(index))?;
 			CandidateDelegators::<T>::set(&candidate, candidate_delegators);
 
 			Ok(())

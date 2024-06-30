@@ -1,8 +1,8 @@
 use crate::mock::RuntimeOrigin;
 
 // Short for runtime origin signed
-pub fn ros(indx: u64) -> RuntimeOrigin {
-	RuntimeOrigin::signed(indx)
+pub fn ros(index: u64) -> RuntimeOrigin {
+	RuntimeOrigin::signed(index)
 }
 
 #[cfg(test)]

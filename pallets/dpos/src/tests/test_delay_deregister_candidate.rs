@@ -80,7 +80,7 @@ fn should_ok_delay_deregister_all_candidates_sucessfully() {
 			ext.run_to_block(1010);
 
 			let delegated_amount = 101;
-			for (indx, (candidate, _)) in DEFAULT_ACTIVE_SET.clone().into_iter().enumerate() {
+			for (index, (candidate, _)) in DEFAULT_ACTIVE_SET.clone().into_iter().enumerate() {
 				assert_ok!(Dpos::delay_deregister_candidate(ros(candidate)));
 
 				assert_eq!(
@@ -99,14 +99,14 @@ fn should_ok_delay_deregister_all_candidates_sucessfully() {
 					candidate,
 					delegated_amount
 				));
-				assert_eq!(DelegateCountMap::<Test>::get(ACCOUNT_6.id), (indx + 1) as u32);
+				assert_eq!(DelegateCountMap::<Test>::get(ACCOUNT_6.id), (index + 1) as u32);
 				assert_eq!(
 					DelegationInfos::<Test>::get(ACCOUNT_6.id, candidate),
 					Some(DelegationInfo { amount: delegated_amount })
 				);
 				assert_eq!(
 					Balances::free_balance(ACCOUNT_6.id),
-					ACCOUNT_6.balance - delegated_amount * (indx + 1) as u128
+					ACCOUNT_6.balance - delegated_amount * (index + 1) as u128
 				);
 
 				assert_eq!(
@@ -114,13 +114,13 @@ fn should_ok_delay_deregister_all_candidates_sucessfully() {
 						&HoldReason::DelegateAmountReserved.into(),
 						&ACCOUNT_6.id
 					),
-					delegated_amount * (indx + 1) as u128
+					delegated_amount * (index + 1) as u128
 				);
 			}
 
 			ext.run_to_block_from(1010, TEST_BLOCKS_PER_EPOCH * 2);
 
-			for (indx, (candidate, _)) in DEFAULT_ACTIVE_SET.clone().into_iter().enumerate() {
+			for (index, (candidate, _)) in DEFAULT_ACTIVE_SET.clone().into_iter().enumerate() {
 				assert_ok!(Dpos::execute_deregister_candidate(ros(candidate)));
 
 				System::assert_last_event(RuntimeEvent::Dpos(
@@ -129,17 +129,17 @@ fn should_ok_delay_deregister_all_candidates_sucessfully() {
 				assert_eq!(CandidatePool::<Test>::get(candidate), None);
 				assert_eq!(
 					CandidatePool::<Test>::count(),
-					(DEFAULT_ACTIVE_SET.len() - (indx + 1)) as u32
+					(DEFAULT_ACTIVE_SET.len() - (index + 1)) as u32
 				);
 				assert_eq!(CandidateDelegators::<Test>::get(candidate), vec![]);
 				assert_eq!(DelegationInfos::<Test>::get(ACCOUNT_6.id, candidate), None);
 				assert_eq!(
 					DelegateCountMap::<Test>::get(ACCOUNT_6.id),
-					(DEFAULT_ACTIVE_SET.len() - (indx + 1)) as u32
+					(DEFAULT_ACTIVE_SET.len() - (index + 1)) as u32
 				);
 
 				let total_delegated_amount =
-					delegated_amount * ((DEFAULT_ACTIVE_SET.len() - (indx + 1)) as u128);
+					delegated_amount * ((DEFAULT_ACTIVE_SET.len() - (index + 1)) as u128);
 				assert_eq!(
 					Balances::free_balance(ACCOUNT_6.id),
 					ACCOUNT_6.balance - total_delegated_amount
@@ -167,7 +167,7 @@ fn should_failed_delay_deregister_candidates_before_due_date() {
 			ext.run_to_block(1010);
 
 			let delegated_amount = 101;
-			for (indx, (candidate, bond)) in DEFAULT_ACTIVE_SET.clone().into_iter().enumerate() {
+			for (index, (candidate, bond)) in DEFAULT_ACTIVE_SET.clone().into_iter().enumerate() {
 				assert_eq!(
 					CandidatePool::<Test>::get(candidate),
 					Some(CandidateDetail {
@@ -201,18 +201,18 @@ fn should_failed_delay_deregister_candidates_before_due_date() {
 						status: types::ValidatorStatus::Offline
 					})
 				);
-				assert_eq!(DelegateCountMap::<Test>::get(ACCOUNT_6.id), (indx + 1) as u32);
+				assert_eq!(DelegateCountMap::<Test>::get(ACCOUNT_6.id), (index + 1) as u32);
 				assert_eq!(
 					DelegationInfos::<Test>::get(ACCOUNT_6.id, candidate),
 					Some(DelegationInfo { amount: delegated_amount })
 				);
 				assert_eq!(
 					Balances::free_balance(ACCOUNT_6.id),
-					ACCOUNT_6.balance - delegated_amount * (indx + 1) as u128
+					ACCOUNT_6.balance - delegated_amount * (index + 1) as u128
 				);
 				assert_eq!(
 					Balances::total_balance_on_hold(&ACCOUNT_6.id),
-					delegated_amount * (indx + 1) as u128
+					delegated_amount * (index + 1) as u128
 				);
 			}
 
@@ -285,7 +285,7 @@ fn should_ok_cancel_deregister_candidate_requests() {
 			ext.run_to_block(1010);
 
 			let delegated_amount = 101;
-			for (indx, (candidate, hold_amount)) in
+			for (index, (candidate, hold_amount)) in
 				DEFAULT_ACTIVE_SET.clone().into_iter().enumerate()
 			{
 				assert_eq!(
@@ -321,18 +321,18 @@ fn should_ok_cancel_deregister_candidate_requests() {
 						status: types::ValidatorStatus::Offline
 					})
 				);
-				assert_eq!(DelegateCountMap::<Test>::get(ACCOUNT_6.id), (indx + 1) as u32);
+				assert_eq!(DelegateCountMap::<Test>::get(ACCOUNT_6.id), (index + 1) as u32);
 				assert_eq!(
 					DelegationInfos::<Test>::get(ACCOUNT_6.id, candidate),
 					Some(DelegationInfo { amount: delegated_amount })
 				);
 				assert_eq!(
 					Balances::free_balance(ACCOUNT_6.id),
-					ACCOUNT_6.balance - delegated_amount * (indx + 1) as u128
+					ACCOUNT_6.balance - delegated_amount * (index + 1) as u128
 				);
 				assert_eq!(
 					Balances::total_balance_on_hold(&ACCOUNT_6.id),
-					delegated_amount * (indx + 1) as u128
+					delegated_amount * (index + 1) as u128
 				);
 			}
 

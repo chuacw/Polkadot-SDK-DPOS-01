@@ -184,27 +184,27 @@ fn should_ok_deregister_all_candidates_sucessfully() {
 		ext.run_to_block(1010);
 
 		let delegated_amount = 101;
-		for (indx, (candidate, _)) in DEFAULT_ACTIVE_SET.clone().into_iter().enumerate() {
+		for (index, (candidate, _)) in DEFAULT_ACTIVE_SET.clone().into_iter().enumerate() {
 			assert_ok!(Dpos::delegate_candidate(ros(ACCOUNT_6.id), candidate, delegated_amount));
-			assert_eq!(DelegateCountMap::<Test>::get(ACCOUNT_6.id), (indx + 1) as u32);
+			assert_eq!(DelegateCountMap::<Test>::get(ACCOUNT_6.id), (index + 1) as u32);
 			assert_eq!(
 				DelegationInfos::<Test>::get(ACCOUNT_6.id, candidate),
 				Some(DelegationInfo { amount: delegated_amount })
 			);
 			assert_eq!(
 				Balances::free_balance(ACCOUNT_6.id),
-				ACCOUNT_6.balance - delegated_amount * (indx + 1) as u128
+				ACCOUNT_6.balance - delegated_amount * (index + 1) as u128
 			);
 			assert_eq!(
 				Balances::balance_on_hold(
 					&HoldReason::DelegateAmountReserved.into(),
 					&ACCOUNT_6.id
 				),
-				delegated_amount * (indx + 1) as u128
+				delegated_amount * (index + 1) as u128
 			);
 		}
 
-		for (indx, (candidate, _)) in DEFAULT_ACTIVE_SET.clone().into_iter().enumerate() {
+		for (index, (candidate, _)) in DEFAULT_ACTIVE_SET.clone().into_iter().enumerate() {
 			assert_ok!(Dpos::force_deregister_candidate(RuntimeOrigin::root(), candidate));
 
 			System::assert_last_event(RuntimeEvent::Dpos(Event::CandidateRegistrationRemoved {
@@ -213,17 +213,17 @@ fn should_ok_deregister_all_candidates_sucessfully() {
 			assert_eq!(CandidatePool::<Test>::get(candidate), None);
 			assert_eq!(
 				CandidatePool::<Test>::count(),
-				(DEFAULT_ACTIVE_SET.len() - (indx + 1)) as u32
+				(DEFAULT_ACTIVE_SET.len() - (index + 1)) as u32
 			);
 			assert_eq!(CandidateDelegators::<Test>::get(candidate), vec![]);
 			assert_eq!(DelegationInfos::<Test>::get(ACCOUNT_6.id, candidate), None);
 			assert_eq!(
 				DelegateCountMap::<Test>::get(ACCOUNT_6.id),
-				(DEFAULT_ACTIVE_SET.len() - (indx + 1)) as u32
+				(DEFAULT_ACTIVE_SET.len() - (index + 1)) as u32
 			);
 
 			let total_delegated_amount =
-				delegated_amount * ((DEFAULT_ACTIVE_SET.len() - (indx + 1)) as u128);
+				delegated_amount * ((DEFAULT_ACTIVE_SET.len() - (index + 1)) as u128);
 			assert_eq!(
 				Balances::free_balance(ACCOUNT_6.id),
 				ACCOUNT_6.balance - total_delegated_amount
